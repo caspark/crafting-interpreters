@@ -4,16 +4,33 @@ Implementation of interpreters from [Crafting Interpreters](http://craftinginter
 
 ## Running
 
+### Convenience script
+
+Build and start Lox:
+
+```shell
+./jlox.sh # interactive
+./jlox.sh app/foo.lox # batch
+```
+
+### Step by step
+
+First build the code:
+
+```shell
+gradle installDist
+```
+
 Start the interpreter:
 
 ```shell
-gradle run
+./app/build/install/app/bin/app
 ```
 
 Interpret some code from a file:
 
 ```shell
-gradle run foo.lox
+./app/build/install/app/bin/app app/foo.lox
 ```
 
 ## Developing
