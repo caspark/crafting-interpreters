@@ -1,0 +1,14 @@
+fun hello() {
+    fun dog() {
+        return 4;
+    }
+    return dog;
+}
+
+print(hello()());
+
+// fun bye() {
+//     return fun() {
+//         return 2;
+//     }
+// }

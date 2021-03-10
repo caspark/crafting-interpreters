@@ -1,0 +1,9 @@
+class World {
+    init(happy, thing) {
+        var x = "a" + "b";
+        var y = 0;
+        print(x * y);
+    }
+}
+
+World(0, 1)
