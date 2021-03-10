@@ -1,6 +1,1 @@
-var hi_there = "dog"
-/* This is a
-multiline comment */
-if (true) {
-    push(1)
-}
+1 + 3/*hello/*world*/*/+ 5

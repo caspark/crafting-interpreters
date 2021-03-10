@@ -101,9 +101,18 @@ class Scanner {
                     // A comment goes until the end of the line.
                     while (peek() != '\n' && !isAtEnd()) advance();
                 } else if (match('*')) {
-                    // A /* comment
-                    while (peek() != '*' && peekNext() != '/' && !isAtEnd()) advance();
-                    current += 2;
+                    // A /* comment, possibly nested
+                    int commentNestLevel = 1;
+                    while (commentNestLevel > 0 && !isAtEnd()) {
+                        if (peek() == '/' && peekNext() == '*') {
+                            advance();
+                            commentNestLevel += 1;
+                        } else if (peek() == '*' && peekNext() == '/') {
+                            advance();
+                            commentNestLevel -= 1;
+                        }
+                        advance();
+                    }
                 } else {
                     addToken(SLASH);
                 }
