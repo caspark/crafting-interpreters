@@ -104,7 +104,9 @@ class Scanner {
                     // A /* comment, possibly nested
                     int commentNestLevel = 1;
                     while (commentNestLevel > 0 && !isAtEnd()) {
-                        if (peek() == '/' && peekNext() == '*') {
+                        if (peek() == '\n') {
+                            line++;
+                        } else if (peek() == '/' && peekNext() == '*') {
                             advance();
                             commentNestLevel += 1;
                         } else if (peek() == '*' && peekNext() == '/') {
