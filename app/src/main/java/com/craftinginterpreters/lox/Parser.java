@@ -54,6 +54,12 @@ class Parser {
     }
 
     private Expr equality() {
+        if (match(BANG_EQUAL, EQUAL_EQUAL)) {
+            ParseError err = error(previous(), "Equality operator missing LHS operand");
+            comparison(); // discard RHS operator
+            throw err;
+        }
+
         Expr expr = comparison();
 
         while (match(BANG_EQUAL, EQUAL_EQUAL)) {
