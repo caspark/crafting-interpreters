@@ -14,6 +14,11 @@ class RpnPrinter implements Expr.Visitor<String> {
     }
 
     @Override
+    public String visitTernaryExpr(Expr.Ternary expr) {
+        return output(expr.first, expr.second, expr.third) + " " + "TERNARY";
+    }
+
+    @Override
     public String visitGroupingExpr(Expr.Grouping expr) {
         return output(expr.expression);
     }

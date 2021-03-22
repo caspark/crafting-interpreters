@@ -46,5 +46,18 @@ See newly added #comma() in Parser for code.
 
 > Likewise, add support for the C-style conditional or “ternary” operator ?:. What precedence level is allowed between the ? and :? Is the whole operator left-associative or right-associative?
 
+```
+expression     -> comma
+comma          -> ternary ( "," ternary)* ;
+conditional    -> equality ("?" expression ":" conditional )? ;
+equality       -> comparison ( ( "!=" | "==" ) comparison)* ;
+comparison     -> term ( ( ">" | ">=" | "<" | "<=" ) term)* ;
+term           -> factor ( ( "-" | "+" ) factor)* ;
+factor         -> unary ( ( "/" | "*" ) unary )* ;
+unary          -> ( "!" | "-" ) unary | primary;
+primary        -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ;
+```
+
+See code added to GenerateAst, Scanner, and conditional in Parser.
 
 > Add error productions to handle each binary operator appearing without a left-hand operand. In other words, detect a binary operator appearing at the beginning of an expression. Report that as an error, but also parse and discard a right-hand operand with the appropriate precedence.

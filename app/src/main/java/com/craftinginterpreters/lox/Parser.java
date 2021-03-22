@@ -27,12 +27,27 @@ class Parser {
     }
 
     private Expr comma() {
-        Expr expr = equality();
+        Expr expr = conditional();
 
         while (match(COMMA)) {
             Token operator = previous();
-            Expr right = equality();
+            Expr right = conditional();
             expr = new Expr.Binary(expr, operator, right);
+        }
+
+        return expr;
+    }
+
+    private Expr conditional() {
+        Expr expr = equality();
+
+        if (match(QUESTION)) {
+            Token firstOperator = previous();
+            Expr second = expression();
+            consume(COLON, "Expect ':' after 2nd expression of ternary ? operator (syntax is A ? B : C)");
+            Token secondOperator = previous();
+            Expr third = conditional();
+            expr = new Expr.Ternary(expr, firstOperator, second, secondOperator, third);
         }
 
         return expr;
