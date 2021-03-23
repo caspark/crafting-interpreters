@@ -60,7 +60,10 @@ public class Lox {
         // Stop if there was a syntax error.
         if (hadError) return;
 
-        new AstPrinter().print(statements).forEach(line -> System.out.println("AST: " + line));
+        System.out.println("=== BEGIN AST");
+        System.out.println(new AstPrinter().print(statements));
+        System.out.println("=== END AST");
+
         interpreter.interpret(statements);
     }
 

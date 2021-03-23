@@ -5,14 +5,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
+    private int depth = 0;
+
     String print(Expr expr) {
         return expr.accept(this);
     }
 
-    List<String> print(List<Stmt> statements) {
+    String print(List<Stmt> statements) {
         return statements.stream()
                 .map(s -> s.accept(this))
-                .collect(Collectors.toList());
+                .collect(Collectors.joining("\n"));
     }
 
     @Override
@@ -76,6 +78,25 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
                         new Expr.Literal(45.67)));
 
         System.out.println(new AstPrinter().print(expression));
+    }
+
+    @Override
+    public String visitBlockStmt(Stmt.Block stmt) {
+        StringBuilder sb = new StringBuilder("{");
+
+        sb.append("    ".repeat(depth));
+        depth += 1;
+        for (Stmt statement : stmt.statements) {
+            sb.append("\n");
+            sb.append("    ".repeat(depth));
+            sb.append(statement.accept(this));
+        }
+        depth -= 1;
+        sb.append("\n");
+        sb.append("    ".repeat(depth));
+        sb.append("}");
+
+        return sb.toString();
     }
 
     @Override

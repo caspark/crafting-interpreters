@@ -4,5 +4,25 @@ var x = 3 + 4 == 7 ? 8 : 10;
 var y;
 var w = "hi there";
 print 2 + 1 + x;
-x = 42;
+x = 42; y = "friend";
 print x;
+
+var a = "global a";
+var b = "global b";
+var c = "global c";
+{
+  var a = "outer a";
+  var b = "outer b";
+  {
+    var a = "inner a";
+    print a;
+    print b;
+    print c;
+  }
+  print a;
+  print b;
+  print c;
+}
+print a;
+print b;
+print c;
