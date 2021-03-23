@@ -34,6 +34,11 @@ class RpnPrinter implements Expr.Visitor<String> {
         return output(expr.right) + " " + expr.operator.lexeme;
     }
 
+    @Override
+    public String visitVariableExpr(Expr.Variable expr) {
+        throw new RuntimeException("Not implemented");
+    }
+
     private String output(Expr... exprs) {
         StringBuilder builder = new StringBuilder();
 

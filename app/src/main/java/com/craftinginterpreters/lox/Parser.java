@@ -6,7 +6,8 @@ import java.util.List;
 import static com.craftinginterpreters.lox.TokenType.*;
 
 class Parser {
-    private static class ParseError extends RuntimeException {}
+    private static class ParseError extends RuntimeException {
+    }
 
     private final List<Token> tokens;
     private int current = 0;
@@ -18,10 +19,33 @@ class Parser {
     List<Stmt> parse() {
         List<Stmt> statements = new ArrayList<>();
         while (!isAtEnd()) {
-            statements.add(statement());
+            statements.add(declaration());
         }
 
         return statements;
+    }
+
+    private Stmt declaration() {
+        try {
+            if (match(VAR)) return varDeclaration();
+
+            return statement();
+        } catch (ParseError error) {
+            synchronize();
+            return null;
+        }
+    }
+
+    private Stmt varDeclaration() {
+        Token name = consume(IDENTIFIER, "Expect variable name.");
+
+        Expr initializer = null;
+        if (match(EQUAL)) {
+            initializer = expression();
+        }
+
+        consume(SEMICOLON, "Expect ';' after variable declaration.");
+        return new Stmt.Var(name, initializer);
     }
 
     private Stmt statement() {
@@ -150,6 +174,10 @@ class Parser {
             return new Expr.Literal(null);
         }
 
+        if (match(IDENTIFIER)) {
+            return new Expr.Variable(previous());
+        }
+
         if (match(LEFT_PAREN)) {
             Expr expression = expression();
             consume(RIGHT_PAREN, "Expect ')' after expression.");
@@ -201,7 +229,9 @@ class Parser {
     private ParseError error(Token token, String message) {
         Lox.error(token, message);
         return new ParseError();
-    }  private void synchronize() {
+    }
+
+    private void synchronize() {
         advance();
 
         while (!isAtEnd()) {

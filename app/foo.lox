@@ -1,3 +1,6 @@
 print "one";
 print true;
-print 2 + 1;
+var x = 3 + 4;
+var y;
+var w = "hi there";
+print 2 + 1 + x;
