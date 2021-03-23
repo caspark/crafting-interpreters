@@ -1,8 +1,18 @@
 package com.craftinginterpreters.lox;
 
-class AstPrinter implements Expr.Visitor<String> {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
     String print(Expr expr) {
         return expr.accept(this);
+    }
+
+    List<String> print(List<Stmt> statements) {
+        return statements.stream()
+                .map(s -> s.accept(this))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -55,5 +65,15 @@ class AstPrinter implements Expr.Visitor<String> {
                         new Expr.Literal(45.67)));
 
         System.out.println(new AstPrinter().print(expression));
+    }
+
+    @Override
+    public String visitExpressionStmt(Stmt.Expression stmt) {
+        return parenthesize(";", stmt.expression);
+    }
+
+    @Override
+    public String visitPrintStmt(Stmt.Print stmt) {
+        return parenthesize("PRINT", stmt.expression);
     }
 }
