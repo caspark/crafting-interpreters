@@ -1,6 +1,8 @@
 print "one";
 print true;
-var x = 3 + 4;
+var x = 3 + 4 == 7 ? 8 : 10;
 var y;
 var w = "hi there";
 print 2 + 1 + x;
+x = 42;
+print x;

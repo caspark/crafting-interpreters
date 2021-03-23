@@ -9,6 +9,11 @@ class RpnPrinter implements Expr.Visitor<String> {
     }
 
     @Override
+    public String visitAssignExpr(Expr.Assign expr) {
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
     public String visitBinaryExpr(Expr.Binary expr) {
         return output(expr.left, expr.right) + " " + expr.operator.lexeme;
     }

@@ -17,7 +17,8 @@ exprStmt       -> expression ";" ;
 printStmt      -> "print" expression ";" ;
 
 expression     -> comma
-comma          -> ternary ( "," ternary)* ;
+comma          -> assignment ( "," assignment)* ;
+assignment     -> IDENTIFIER "=" assignment | conditional ;
 conditional    -> equality ("?" expression ":" conditional )? ;
 equality       -> ( "!=" | "==" ) | ( comparison ( ( "!=" | "==" ) comparison)* ) ; // <-- changed
 comparison     -> term ( ( ">" | ">=" | "<" | "<=" ) term)* ;
