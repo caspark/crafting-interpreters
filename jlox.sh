@@ -2,6 +2,6 @@
 
 set -ex
 
-gradle installDist
+gradle installDist --info
 
 exec ./app/build/install/app/bin/app "$@"
