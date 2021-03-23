@@ -29,7 +29,7 @@ public class Lox {
         Path fullPath = Paths.get(path);
         System.out.println("Attempting to run: " + fullPath);
         byte[] bytes = Files.readAllBytes(fullPath);
-        run(new String(bytes, Charset.defaultCharset()));
+        run(new String(bytes, Charset.defaultCharset()), false);
 
         // Indicate an error in the exit code.
         if (hadError) System.exit(65);
@@ -44,17 +44,17 @@ public class Lox {
             System.out.print("> ");
             String line = reader.readLine();
             if (line == null) break;
-            run(line);
+            run(line, true);
             hadError = false;
             hadRuntimeError = false;
         }
     }
 
-    private static void run(String source) {
+    private static void run(String source, boolean repl) {
         Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.scanTokens();
 
-        Parser parser = new Parser(tokens);
+        Parser parser = new Parser(tokens, repl);
         List<Stmt> statements = parser.parse();
 
         // Stop if there was a syntax error.

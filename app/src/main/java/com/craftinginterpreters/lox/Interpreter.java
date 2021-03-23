@@ -200,11 +200,13 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     @Override
     public Void visitVarStmt(Stmt.Var stmt) {
         Object value = null;
-        if (stmt.initializer != null) {
+        if (stmt.initializer == null) {
+            environment.define(stmt.name.lexeme, Environment.UNINITIALIZED_VALUE);
+        } else {
             value = evaluate(stmt.initializer);
+            environment.define(stmt.name.lexeme, value);
         }
 
-        environment.define(stmt.name.lexeme, value);
         return null;
     }
 }

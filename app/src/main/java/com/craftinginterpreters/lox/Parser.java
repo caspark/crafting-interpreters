@@ -10,10 +10,12 @@ class Parser {
     }
 
     private final List<Token> tokens;
+    private final boolean printNakedExpression;
     private int current = 0;
 
-    Parser(List<Token> tokens) {
+    Parser(List<Token> tokens, boolean printNakedExpression) {
         this.tokens = tokens;
+        this.printNakedExpression = printNakedExpression;
     }
 
     List<Stmt> parse() {
@@ -74,8 +76,14 @@ class Parser {
 
     private Stmt expressionStatement() {
         Expr expr = expression();
-        consume(SEMICOLON, "Expect ';' after expression.");
-        return new Stmt.Expression(expr);
+        if (check(SEMICOLON)) {
+            advance();
+            return new Stmt.Expression(expr);
+        } else if (printNakedExpression) {
+            return new Stmt.Print(expr);
+        } else {
+            throw error(peek(), "Expect ';' after expression.");
+        }
     }
 
     private Expr expression() {
