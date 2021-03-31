@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
+    public static final String INDENT = "    ";
     private int depth = 0;
 
     String print(Expr expr) {
@@ -84,16 +85,16 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
     public String visitBlockStmt(Stmt.Block stmt) {
         StringBuilder sb = new StringBuilder("{");
 
-        sb.append("    ".repeat(depth));
+        sb.append(INDENT.repeat(depth));
         depth += 1;
         for (Stmt statement : stmt.statements) {
             sb.append("\n");
-            sb.append("    ".repeat(depth));
+            sb.append(INDENT.repeat(depth));
             sb.append(statement.accept(this));
         }
         depth -= 1;
         sb.append("\n");
-        sb.append("    ".repeat(depth));
+        sb.append(INDENT.repeat(depth));
         sb.append("}");
 
         return sb.toString();
@@ -102,6 +103,30 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
     @Override
     public String visitExpressionStmt(Stmt.Expression stmt) {
         return parenthesize(";", stmt.expression);
+    }
+
+    @Override
+    public String visitIfStmt(Stmt.If stmt) {
+        StringBuilder sb = new StringBuilder("IF(");
+        sb.append(stmt.condition.accept(this));
+        sb.append(") THEN [\n");
+        depth += 1;
+        sb.append(INDENT.repeat(depth));
+        sb.append(stmt.thenBranch.accept(this));
+        if (stmt.elseBranch == null) {
+            depth -= 1;
+            sb.append(INDENT.repeat(depth));
+            sb.append("]");
+        } else {
+            sb.append("\n");
+            sb.append(INDENT.repeat(depth));
+            sb.append("] ELSE [\n");
+            depth += 1;
+            sb.append(stmt.elseBranch.accept(this));
+            depth -= 1;
+            sb.append(INDENT.repeat(depth));
+        }
+        return sb.toString();
     }
 
     @Override
