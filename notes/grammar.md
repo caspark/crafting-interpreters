@@ -5,16 +5,16 @@ A file to keep track of Lox's grammar, given that various challenges have caused
 ```
 program        -> declaration* EOF ;
 
-declaration    -> varDecl
-                | statement ;
+declaration    -> varDecl | statement ;
 
 varDecl        -> "var" IDENTIFIER ( "=" expression )? ";" ;
 
-statement      -> exprStmt | ifStmt | printStmt | block;
+statement      -> exprStmt | ifStmt | printStmt | whileStmt | block;
 
 exprStmt       -> expression ";" ;
-ifStmt         → "if" "(" expression ")" statement ( "else" statement )? ;
+ifStmt         -> "if" "(" expression ")" statement ( "else" statement )? ;
 printStmt      -> "print" expression ";" ;
+whileStmt      -> "while" "(" expression ")" statement ;
 block          -> "{" declaration* "}" ;
 
 expression     -> comma

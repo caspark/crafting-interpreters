@@ -146,4 +146,13 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
                         "null" :
                         stmt.initializer.accept(this));
     }
+
+    @Override
+    public String visitWhileStmt(Stmt.While stmt) {
+        StringBuilder sb = new StringBuilder("WHILE(");
+        sb.append(stmt.condition.accept(this));
+        sb.append(")");
+        sb.append(stmt.body.accept(this));
+        return sb.toString();
+    }
 }
