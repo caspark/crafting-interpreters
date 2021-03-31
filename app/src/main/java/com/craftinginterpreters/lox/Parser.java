@@ -136,7 +136,7 @@ class Parser {
     }
 
     private Expr conditional() {
-        Expr expr = equality();
+        Expr expr = or();
 
         if (match(QUESTION)) {
             Token firstOperator = previous();
@@ -145,6 +145,30 @@ class Parser {
             Token secondOperator = previous();
             Expr third = conditional();
             expr = new Expr.Ternary(expr, firstOperator, second, secondOperator, third);
+        }
+
+        return expr;
+    }
+
+    private Expr or() {
+        Expr expr = and();
+
+        while (match(OR)) {
+            Token operator = previous();
+            Expr right = and();
+            expr = new Expr.Logical(expr, operator, right);
+        }
+
+        return expr;
+    }
+
+    private Expr and() {
+        Expr expr = equality();
+
+        while (match(AND)) {
+            Token operator = previous();
+            Expr right = equality();
+            expr = new Expr.Logical(expr, operator, right);
         }
 
         return expr;
