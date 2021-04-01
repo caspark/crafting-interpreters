@@ -14,6 +14,8 @@ class Parser {
     private final boolean printNakedExpression;
     private int current = 0;
 
+    private int loopDepth = 0;
+
     Parser(List<Token> tokens, boolean printNakedExpression) {
         this.tokens = tokens;
         this.printNakedExpression = printNakedExpression;
@@ -56,10 +58,12 @@ class Parser {
         if (match(IF)) return ifStatement();
         if (match(PRINT)) return printStatement();
         if (match(WHILE)) return whileStatement();
+        if (match(BREAK)) return breakStatement();
         if (match(LEFT_BRACE)) return new Stmt.Block(block());
 
         return expressionStatement();
     }
+
 
     private Stmt forStatement() {
         consume(LEFT_PAREN, "Expect '(' after 'for'.");
@@ -85,8 +89,11 @@ class Parser {
         }
         consume(RIGHT_PAREN, "Expect ')' after for clauses.");
 
+        loopDepth += 1;
         Stmt body = statement();
+        loopDepth -= 1;
 
+        // now desugar
         if (increment != null) {
             body = new Stmt.Block(
                     Arrays.asList(body, new Stmt.Expression(increment)));
@@ -103,15 +110,12 @@ class Parser {
         return body;
     }
 
-    private List<Stmt> block() {
-        List<Stmt> statements = new ArrayList<>();
-
-        while (!check(RIGHT_BRACE) && !isAtEnd()) {
-            statements.add(declaration());
+    private Stmt breakStatement() {
+        if (loopDepth == 0) {
+            error( previous(), "Cannot break outside of a loop");
         }
-
-        consume(RIGHT_BRACE, "Expect '}' after block.");
-        return statements;
+        consume(SEMICOLON, "Expect ; after break.");
+        return new Stmt.Break();
     }
 
     private Stmt ifStatement() {
@@ -138,9 +142,22 @@ class Parser {
         consume(LEFT_PAREN, "Expect '(' after 'while'.");
         Expr condition = expression();
         consume(RIGHT_PAREN, "Expect ')' after condition.");
+        loopDepth += 1;
         Stmt body = statement();
+        loopDepth -= 1;
 
         return new Stmt.While(condition, body);
+    }
+
+    private List<Stmt> block() {
+        List<Stmt> statements = new ArrayList<>();
+
+        while (!check(RIGHT_BRACE) && !isAtEnd()) {
+            statements.add(declaration());
+        }
+
+        consume(RIGHT_BRACE, "Expect '}' after block.");
+        return statements;
     }
 
     private Stmt expressionStatement() {

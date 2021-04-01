@@ -3,7 +3,9 @@ package com.craftinginterpreters.tool;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GenerateAst {
     public static void main(String[] args) throws IOException {
@@ -28,7 +30,8 @@ public class GenerateAst {
                 "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
                 "Print      : Expr expression",
                 "Var        : Token name, Expr initializer",
-                "While      : Expr condition, Stmt body"
+                "While      : Expr condition, Stmt body",
+                "Break"
         ));
     }
 
@@ -48,9 +51,13 @@ public class GenerateAst {
 
         // The AST classes.
         for (String type : types) {
-            String className = type.split(":")[0].trim();
-            String fields = type.split(":")[1].trim();
-            defineType(writer, baseName, className, fields);
+            if (type.contains(":")) {
+                String className = type.split(":")[0].trim();
+                String fields = type.split(":")[1].trim();
+                defineType(writer, baseName, className, fields);
+            } else {
+                defineType(writer, baseName, type, "");
+            }
         }
 
         // The base accept() method.
@@ -83,8 +90,13 @@ public class GenerateAst {
         writer.println("    " + className + "(" + fieldList + ") {");
 
         // Store parameters in fields.
-        String[] fields = fieldList.split(", ");
+        List<String> fields = Arrays.stream(fieldList.split(", "))
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList());
         for (String field : fields) {
+            if (field.isEmpty()) {
+                continue;
+            }
             String name = field.split(" ")[1];
             writer.println("      this." + name + " = " + name + ";");
         }

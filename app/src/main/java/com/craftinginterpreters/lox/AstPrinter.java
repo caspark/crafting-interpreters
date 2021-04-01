@@ -155,4 +155,9 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
         sb.append(stmt.body.accept(this));
         return sb.toString();
     }
+
+    @Override
+    public String visitBreakStmt(Stmt.Break stmt) {
+        return "BREAK";
+    }
 }
