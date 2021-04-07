@@ -150,6 +150,7 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
         sb.append(stmt.thenBranch.accept(this));
         if (stmt.elseBranch == null) {
             depth -= 1;
+            sb.append("\n");
             sb.append(INDENT.repeat(depth));
             sb.append("]");
         } else {
@@ -167,6 +168,11 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
     @Override
     public String visitPrintStmt(Stmt.Print stmt) {
         return parenthesize("PRINT", stmt.expression);
+    }
+
+    @Override
+    public String visitReturnStmt(Stmt.Return stmt) {
+        return parenthesize("RETURN", stmt.value);
     }
 
     @Override
