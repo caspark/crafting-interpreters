@@ -125,10 +125,26 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
     }
 
     @Override
+    public String visitFunctionStmt(Stmt.Function stmt) {
+        StringBuilder sb = new StringBuilder("FUN:");
+        sb.append(stmt.name);
+        sb.append("(");
+        sb.append(stmt.params.stream().map(t -> t.lexeme)
+                .collect(Collectors.joining(", ")));
+        sb.append(") {\n");
+        depth += 1;
+        sb.append(stmt.body.stream().map(s -> INDENT.repeat(depth) + s.accept(this))
+                .collect(Collectors.joining("\n")));
+        depth -= 1;
+        sb.append("\n}");
+        return sb.toString();
+    }
+
+    @Override
     public String visitIfStmt(Stmt.If stmt) {
-        StringBuilder sb = new StringBuilder("IF(");
+        StringBuilder sb = new StringBuilder("IF:");
         sb.append(stmt.condition.accept(this));
-        sb.append(") THEN [\n");
+        sb.append(" THEN [\n");
         depth += 1;
         sb.append(INDENT.repeat(depth));
         sb.append(stmt.thenBranch.accept(this));

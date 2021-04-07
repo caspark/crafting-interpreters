@@ -5,7 +5,11 @@ A file to keep track of Lox's grammar, given that various challenges have caused
 ```
 program        -> declaration* EOF ;
 
-declaration    -> varDecl | statement ;
+declaration    -> funDecl | varDecl | statement ;
+
+funDecl        -> "fun" function ;
+function       -> IDENTIFIER "(" parameters? ")" block ;
+parameters     -> IDENTIFIER ( "," IDENTIFIER )* ;
 
 varDecl        -> "var" IDENTIFIER ( "=" expression )? ";" ;
 
