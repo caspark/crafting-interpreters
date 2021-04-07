@@ -44,23 +44,8 @@ class Parser {
 
     private Stmt.Function function(String kind) {
         Token name = consume(IDENTIFIER, "Expect " + kind + " name.");
-        consume(LEFT_PAREN, "Expect '(' after " + kind + " name.");
-        List<Token> parameters = new ArrayList<>();
-        if (!check(RIGHT_PAREN)) {
-            do {
-                if (parameters.size() >= 255) {
-                    error(peek(), "Can't have more than 255 parameters.");
-                }
-
-                parameters.add(
-                        consume(IDENTIFIER, "Expect parameter name."));
-            } while (match(COMMA));
-        }
-        consume(RIGHT_PAREN, "Expect ')' after parameters.");
-
-        consume(LEFT_BRACE, "Expect '{' before " + kind + " body.");
-        List<Stmt> body = block();
-        return new Stmt.Function(name, parameters, body);
+        Tuple<List<Token>, List<Stmt>> paramsAndBody = functionParamsAndBody(kind);
+        return new Stmt.Function(name, paramsAndBody.a, paramsAndBody.b);
     }
 
     private Stmt varDeclaration() {
@@ -211,15 +196,44 @@ class Parser {
     }
 
     private Expr comma() {
-        Expr expr = assignment();
+        Expr expr = functionExpression();
 
         while (match(COMMA)) {
             Token operator = previous();
-            Expr right = assignment();
+            Expr right = functionExpression();
             expr = new Expr.Binary(expr, operator, right);
         }
 
         return expr;
+    }
+
+    private Expr functionExpression() {
+        if (match(FUN)) {
+            Tuple<List<Token>, List<Stmt>> paramsAndBody = functionParamsAndBody("function expression");
+            return new Expr.FunctionExp(paramsAndBody.a, paramsAndBody.b);
+        } else {
+            return assignment();
+        }
+    }
+
+    private Tuple<List<Token>, List<Stmt>> functionParamsAndBody(String kind) {
+        consume(LEFT_PAREN, "Expect '(' after " + kind + ".");
+        List<Token> parameters = new ArrayList<>();
+        if (!check(RIGHT_PAREN)) {
+            do {
+                if (parameters.size() >= 255) {
+                    error(peek(), "Can't have more than 255 parameters.");
+                }
+
+                parameters.add(consume(IDENTIFIER, "Expect parameter name."));
+            } while (match(COMMA));
+        }
+        consume(RIGHT_PAREN, "Expect ')' after parameters.");
+
+        consume(LEFT_BRACE, "Expect '{' before " + kind + " body.");
+        List<Stmt> body = block();
+
+        return new Tuple<>(parameters, body);
     }
 
     private Expr assignment() {
@@ -365,7 +379,6 @@ class Parser {
                 if (arguments.size() >= 255) {
                     error(peek(), "Can't have more than 255 arguments.");
                 }
-                System.out.println("Found arg");
                 arguments.add(assignment());
             } while (match(COMMA));
         }

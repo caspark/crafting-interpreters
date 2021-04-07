@@ -75,6 +75,21 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
         return "`" + expr.name.lexeme + "`";
     }
 
+    @Override
+    public String visitFunctionExpExpr(Expr.FunctionExp expr) {
+        StringBuilder sb = new StringBuilder("FUN_INLINE");
+        sb.append("(");
+        sb.append(expr.params.stream().map(t -> t.lexeme)
+                .collect(Collectors.joining(", ")));
+        sb.append(") {\n");
+        depth += 1;
+        sb.append(expr.body.stream().map(s -> INDENT.repeat(depth) + s.accept(this))
+                .collect(Collectors.joining("\n")));
+        depth -= 1;
+        sb.append("\n}");
+        return sb.toString();
+    }
+
     private String parenthesize(String name, Expr... exprs) {
         StringBuilder builder = new StringBuilder();
 

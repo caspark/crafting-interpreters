@@ -100,6 +100,10 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return environment.get(expr.name);
     }
 
+    @Override
+    public Object visitFunctionExpExpr(Expr.FunctionExp expr) {
+        return new LoxInlineFunction(expr, environment);
+    }
 
     private Object evaluate(Expr expr) {
         return expr.accept(this);

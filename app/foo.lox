@@ -78,3 +78,21 @@ fun makeCounter() {
 var counter = makeCounter();
 counter(); // "1".
 counter(); // "2".
+
+fun scope(a) {
+  print(a);
+  a = "x";
+  print(a);
+  var a = "local";
+  print(a);
+}
+
+var b = "hi";
+scope(b);
+print b;
+
+var f = fun(a) {
+  print "f" + a;
+};
+f("inline");
+(fun() {print "IEFE!"; })();

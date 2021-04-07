@@ -25,7 +25,8 @@ breakStmt      -> "break" ;
 block          -> "{" declaration* "}" ;
 
 expression     -> comma
-comma          -> assignment ( "," assignment)* ;
+comma          -> funExp ( "," funExp)* ;
+funExp         -> "fun" "(" parameters? ")" block | assignment ;
 assignment     -> IDENTIFIER "=" assignment | conditional ;
 conditional    -> logic_or ("?" expression ":" conditional )? ;
 logic_or       -> logic_and ( "or" logic_and )* ;
