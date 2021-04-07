@@ -35,6 +35,20 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
     }
 
     @Override
+    public String visitCallExpr(Expr.Call expr) {
+        StringBuilder args = new StringBuilder();
+        for (Expr arg : expr.arguments) {
+            if (args.length() > 0) {
+                args.append(", ");
+            }
+            args.append(arg.accept(this));
+        }
+
+        return "CALL[" + expr.callee.accept(this) +
+                "](" + args.toString() + ")";
+    }
+
+    @Override
     public String visitGroupingExpr(Expr.Grouping expr) {
         return parenthesize("group", expr.expression);
     }

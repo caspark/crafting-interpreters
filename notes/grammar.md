@@ -29,6 +29,10 @@ equality       -> ( "!=" | "==" ) | ( comparison ( ( "!=" | "==" ) comparison)* 
 comparison     -> term ( ( ">" | ">=" | "<" | "<=" ) term)* ;
 term           -> factor ( ( "-" | "+" ) factor)* ;
 factor         -> unary ( ( "/" | "*" ) unary )* ;
-unary          -> ( "!" | "-" ) unary | primary;
+unary          -> ( "!" | "-" ) unary | call;
+call           -> primary ( "(" arguments ")" )* ;
 primary        -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER ;
+
+# arguments is composed of `assignment` rather than `expression` to avoid comma operator being parsed
+arguments      -> assignment ( "," assignment )* ;
 ```
