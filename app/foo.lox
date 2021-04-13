@@ -103,9 +103,12 @@ var a = "global";
 {
   fun showA() {
     print a;
+    return 42;
   }
 
   showA();
   var a = "block";
-  showA();
+  print showA();
 }
+
+//return "at top level";
