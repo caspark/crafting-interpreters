@@ -4,7 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 class Environment {
-    public static final Object UNINITIALIZED_VALUE = new Object();
+    public static final Object UNINITIALIZED_VALUE = new Object(){
+        @Override
+        public String toString() {
+            return "{LOX UNINITIALIZED VALUE}";
+        }
+    };
 
     final Environment enclosing;
     private final Map<String, Object> values = new HashMap<>();
@@ -32,8 +37,12 @@ class Environment {
         throw new RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
     }
 
-    Object getAt(int distance, String name) {
-        return ancestor(distance).values.get(name);
+    Object getAt(int distance, Token name) {
+        Object val = ancestor(distance).values.get(name.lexeme);
+        if (val == UNINITIALIZED_VALUE) {
+            throw new RuntimeError(name, "Uninitialized variable '" + name.lexeme + "'.");
+        }
+        return val;
     }
 
     void assign(Token name, Object value) {

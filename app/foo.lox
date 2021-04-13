@@ -109,6 +109,38 @@ var a = "global";
   showA();
   var a = "block";
   print showA();
+  print a;
 }
 
 //return "at top level";
+
+// unused variable checking (chapter 11 challenge)
+var u = "outer";
+var outer_unused = "haha"; // should not be detected
+{
+  /*
+  fun notUser() {
+    print u;
+  }
+  var u;
+  notUser();
+
+  var init_inline_but_unused = "inline";
+  var init_later_but_unused;
+  init_later_but_unused = "later";
+
+  // check uninitialized variables (personal challenge)
+  var uninit_not_used;
+  var uninit_but_used;
+  print uninit_but_used;
+  */
+
+  /*
+  // init only in a branch that's never executed should pass compile time checks
+  var init_in_branch;
+  if (false) {
+    init_in_branch = "set in branch";
+  }
+  print init_in_branch
+  */
+}
