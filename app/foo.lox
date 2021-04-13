@@ -27,11 +27,13 @@ print a;
 print b;
 print c;
 
+/*
 var v = 1;
 {
     var v = v + 2;
     print v;
 }
+*/
 
 var a = 0;
 var temp;
@@ -83,8 +85,8 @@ fun scope(a) {
   print(a);
   a = "x";
   print(a);
-  var a = "local";
-  print(a);
+  //var a = "local";
+  //print(a);
 }
 
 var b = "hi";
@@ -96,3 +98,14 @@ var f = fun(a) {
 };
 f("inline");
 (fun() {print "IEFE!"; })();
+
+var a = "global";
+{
+  fun showA() {
+    print a;
+  }
+
+  showA();
+  var a = "block";
+  showA();
+}

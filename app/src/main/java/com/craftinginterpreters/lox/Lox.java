@@ -64,6 +64,9 @@ public class Lox {
         System.out.println(new AstPrinter().print(statements));
         System.out.println("=== END AST");
 
+        Resolver resolver = new Resolver(interpreter);
+        resolver.resolve(statements);
+
         interpreter.interpret(statements);
     }
 
