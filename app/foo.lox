@@ -158,3 +158,11 @@ var bagel = Bagel();
 print bagel; // Prints "Bagel instance".
 bagel.toasted = true;
 print "Bagel is toasted? " + bagel.toasted;
+
+class Bacon {
+  eat() {
+    print "Crunch crunch crunch!";
+  }
+}
+
+Bacon().eat(); // Prints "Crunch crunch crunch!".
