@@ -49,6 +49,11 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
     }
 
     @Override
+    public String visitGetExpr(Expr.Get expr) {
+        return "(GET " + expr.object.accept(this) + " DOT " + expr.name.lexeme + ")";
+    }
+
+    @Override
     public String visitGroupingExpr(Expr.Grouping expr) {
         return parenthesize("group", expr.expression);
     }
@@ -66,13 +71,19 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
     }
 
     @Override
+    public String visitSetExpr(Expr.Set expr) {
+        return "(SET " + expr.object.accept(this) + " DOT " + expr.name.lexeme +
+                " TO " + expr.value.accept(this) + ")";
+    }
+
+    @Override
     public String visitUnaryExpr(Expr.Unary expr) {
         return parenthesize(expr.operator.lexeme, expr.right);
     }
 
     @Override
     public String visitVariableExpr(Expr.Variable expr) {
-        return "`" + expr.name.lexeme + "`";
+        return "(VAR " + expr.name.lexeme + ")";
     }
 
     @Override
@@ -137,7 +148,7 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
     @Override
     public String visitClassStmt(Stmt.Class stmt) {
         StringBuilder sb = new StringBuilder("CLASS:");
-        sb.append(stmt.name);
+        sb.append(stmt.name.lexeme);
         sb.append("{\n");
         depth += 1;
         sb.append(stmt.methods.stream().map(func -> INDENT.repeat(depth) + func.accept(this))

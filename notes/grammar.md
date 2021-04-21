@@ -29,7 +29,7 @@ block          -> "{" declaration* "}" ;
 expression     -> comma
 comma          -> funExp ( "," funExp)* ;
 funExp         -> "fun" "(" parameters? ")" block | assignment ;
-assignment     -> IDENTIFIER "=" assignment | conditional ;
+assignment     -> ( call "." )? IDENTIFIER "=" assignment | conditional ;
 conditional    -> logic_or ("?" expression ":" conditional )? ;
 logic_or       -> logic_and ( "or" logic_and )* ;
 logic_and      -> equality ( "and" equality )* ;
@@ -38,7 +38,7 @@ comparison     -> term ( ( ">" | ">=" | "<" | "<=" ) term)* ;
 term           -> factor ( ( "-" | "+" ) factor)* ;
 factor         -> unary ( ( "/" | "*" ) unary )* ;
 unary          -> ( "!" | "-" ) unary | call;
-call           -> primary ( "(" arguments ")" )* ;
+call           -> primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
 primary        -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER ;
 
 # arguments is composed of `assignment` rather than `expression` to avoid comma operator being parsed
