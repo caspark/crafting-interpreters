@@ -33,6 +33,13 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         return null;
     }
 
+    @Override
+    public Void visitClassStmt(Stmt.Class stmt) {
+        declare(stmt.name);
+        define(stmt.name, true);
+        return null;
+    }
+
     void resolve(List<Stmt> statements) {
         for (Stmt statement : statements) {
             resolve(statement);
@@ -56,7 +63,7 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         scope.forEach((v, lineAndState) -> {
             Integer lineNum = lineAndState.a;
             VariableState state = lineAndState.b;
-            switch(state) {
+            switch (state) {
                 case DECLARED -> Lox.error(lineNum, "Variable declared but is never defined: " + v + " (this almost certainly a bug in jlox!)");
                 case DEFINED -> Lox.error(lineNum, "Variable defined but not initialized: " + v);
                 case INITIALIZED -> Lox.error(lineNum, "Variable initialized but not used: " + v);
@@ -133,7 +140,7 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
                     scope.put(name.lexeme, new Tuple<>(tuple.a, VariableState.INITIALIZED));
                 } else {
                     switch (tuple.b) {
-                        case DECLARED-> Lox.error(tuple.a, "Variable is declared but not defined before usage: " + name.lexeme + " (this is almost certainly a bug in jlox!)");
+                        case DECLARED -> Lox.error(tuple.a, "Variable is declared but not defined before usage: " + name.lexeme + " (this is almost certainly a bug in jlox!)");
                         case DEFINED -> Lox.error(tuple.a, "Variable is defined but not initialized before usage: " + name.lexeme);
                         case INITIALIZED -> scope.put(name.lexeme, new Tuple<>(tuple.a, VariableState.USED)); // record that we've used the variable
                         case USED -> {

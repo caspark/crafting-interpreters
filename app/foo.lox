@@ -144,3 +144,11 @@ var outer_unused = "haha"; // should not be detected
   print init_in_branch
   */
 }
+
+class DevonshireCream {
+  serveOn() {
+    return "Scones";
+  }
+}
+
+print DevonshireCream; // Prints "DevonshireCream".
