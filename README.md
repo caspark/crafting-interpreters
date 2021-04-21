@@ -10,7 +10,6 @@ Build and start Lox:
 
 ```shell
 ./jlox.sh # interactive
-rlwrap ./jlox.sh # with readline support if rlwrap is installed
 ./jlox.sh app/foo.lox # batch
 ```
 
