@@ -39,7 +39,7 @@ term           -> factor ( ( "-" | "+" ) factor)* ;
 factor         -> unary ( ( "/" | "*" ) unary )* ;
 unary          -> ( "!" | "-" ) unary | call;
 call           -> primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
-primary        -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER ;
+primary        -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER | "super" "." IDENTIFIER ;
 
 # arguments is composed of `assignment` rather than `expression` to avoid comma operator being parsed
 arguments      -> assignment ( "," assignment )* ;
