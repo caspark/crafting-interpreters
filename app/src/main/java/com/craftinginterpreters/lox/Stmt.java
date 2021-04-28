@@ -6,6 +6,7 @@ abstract class Stmt {
   interface Visitor<R> {
     R visitBlockStmt(Block stmt);
     R visitClassStmt(Class stmt);
+    R visitExtendStmt(Extend stmt);
     R visitExpressionStmt(Expression stmt);
     R visitFunctionStmt(Function stmt);
     R visitIfStmt(If stmt);
@@ -41,6 +42,20 @@ abstract class Stmt {
 
     final Token name;
     final Expr.Variable superclass;
+    final List<Stmt.Function> methods;
+  }
+  static class Extend extends Stmt {
+    Extend(Token name, List<Stmt.Function> methods) {
+      this.name = name;
+      this.methods = methods;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitExtendStmt(this);
+    }
+
+    final Token name;
     final List<Stmt.Function> methods;
   }
   static class Expression extends Stmt {

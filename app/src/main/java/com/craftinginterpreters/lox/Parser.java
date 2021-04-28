@@ -33,6 +33,7 @@ class Parser {
     private Stmt declaration() {
         try {
             if (match(CLASS)) return classDeclaration();
+            if (match(EXTEND)) return extendDeclaration();
             if (match(FUN)) return function("function");
             if (match(VAR)) return varDeclaration();
 
@@ -62,6 +63,21 @@ class Parser {
         consume(RIGHT_BRACE, "Expect '}' after class body.");
 
         return new Stmt.Class(name, superclass, methods);
+    }
+
+
+    private Stmt extendDeclaration() {
+        Token name = consume(IDENTIFIER, "Expect class name.");
+        consume(LEFT_BRACE, "Expect '{' before class body.");
+
+        List<Stmt.Function> methods = new ArrayList<>();
+        while (!check(RIGHT_BRACE) && !isAtEnd()) {
+            methods.add(function("method"));
+        }
+
+        consume(RIGHT_BRACE, "Expect '}' after class body.");
+
+        return new Stmt.Extend(name, methods);
     }
 
     private Stmt.Function function(String kind) {

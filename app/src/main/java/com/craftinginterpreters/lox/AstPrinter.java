@@ -175,6 +175,19 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
     }
 
     @Override
+    public String visitExtendStmt(Stmt.Extend stmt) {
+        StringBuilder sb = new StringBuilder("EXTEND:");
+        sb.append(stmt.name.lexeme);
+        sb.append("{\n");
+        depth += 1;
+        sb.append(stmt.methods.stream().map(func -> INDENT.repeat(depth) + func.accept(this))
+                .collect(Collectors.joining("\n")));
+        depth -= 1;
+        sb.append("\n}");
+        return sb.toString();
+    }
+
+    @Override
     public String visitExpressionStmt(Stmt.Expression stmt) {
         return parenthesize(";", stmt.expression);
     }

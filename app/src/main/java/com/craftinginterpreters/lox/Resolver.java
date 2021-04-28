@@ -88,6 +88,33 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         return null;
     }
 
+    @Override
+    public Void visitExtendStmt(Stmt.Extend stmt) {
+        if (currentClass != ClassType.NONE) {
+            Lox.error(stmt.name, "Cannot extend a class while still defining another class");
+        }
+        ClassType enclosingClass = currentClass;
+        currentClass = ClassType.CLASS;
+
+        beginScope();
+        // we pretend that `this` is already "used" because we don't consider it an error if `this` is not used.
+        scopes.peek().put("this", new Tuple<>(stmt.name.line, VariableState.USED));
+
+        for (Stmt.Function method : stmt.methods) {
+            FunctionType declaration = FunctionType.METHOD;
+            if (method.name.lexeme.equals("init")) {
+                Lox.error(method.name, "Can't define a constructor while extending a class.");
+            }
+
+            resolveFunction(method, declaration);
+        }
+
+        endScope();
+
+        currentClass = enclosingClass;
+        return null;
+    }
+
     void resolve(List<Stmt> statements) {
         for (Stmt statement : statements) {
             resolve(statement);

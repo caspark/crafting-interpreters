@@ -5,9 +5,10 @@ A file to keep track of Lox's grammar, given that various challenges have caused
 ```
 program        -> declaration* EOF ;
 
-declaration    -> classDecl | funDecl | varDecl | statement ;
+declaration    -> classDecl | extensionDecl | funDecl | varDecl | statement ;
 
 classDecl      -> "class" IDENTIFIER ( "<" IDENTIFIER )? "{" function* "}" ;
+extensionDecl  -> "extend" IDENTIFIER "{" function* "}" ;
 
 funDecl        -> "fun" function ;
 function       -> IDENTIFIER "(" parameters? ")" block ;

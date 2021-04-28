@@ -210,4 +210,28 @@ class BostonCream < Doughnut {
   }
 }
 
-BostonCream().cook();
+var bcDonut = BostonCream();
+bcDonut.cook();
+
+// extension methods
+{
+    extend Doughnut {
+      eatIt() {
+        print "You eat the donut, mmm";
+      }
+    }
+
+    bcDonut.eatIt();
+
+    extend Doughnut {
+      //cook() { print "this won't work because cook is already defined"; }
+    }
+
+    // extend DoesNotExist { /* won't work because class to be extended is not yet defined */ }
+
+    /*
+    class Whatever {
+        extend Doughnut { newMethod() { /* won't work because can't extend while in a class */ } }
+    }
+    */
+} //NB: as a reader, you might expect that the extension method is "out of scope" now - but you'd be wrong! that'd be a good thing to fix.

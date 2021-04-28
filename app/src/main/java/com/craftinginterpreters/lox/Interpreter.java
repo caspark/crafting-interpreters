@@ -97,15 +97,14 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     @Override
     public Object visitSuperExpr(Expr.Super expr) {
         int distance = locals.get(expr);
-        LoxClass superclass = (LoxClass)environment.getAt(distance, expr.keyword);
+        LoxClass superclass = (LoxClass) environment.getAt(distance, expr.keyword);
 
-        LoxInstance object = (LoxInstance)environment.getAt(distance - 1, expr.keyword);
+        LoxInstance object = (LoxInstance) environment.getAt(distance - 1, expr.keyword);
 
         LoxFunction method = superclass.findMethod(expr.method.lexeme);
 
         if (method == null) {
-            throw new RuntimeError(expr.method,
-                    "Undefined property '" + expr.method.lexeme + "'.");
+            throw new RuntimeError(expr.method, "Undefined property '" + expr.method.lexeme + "'.");
         }
 
         return method.bind(object);
@@ -336,13 +335,34 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             methods.put(method.name.lexeme, function);
         }
 
-        LoxClass klass = new LoxClass(stmt.name.lexeme, (LoxClass)superclass, methods);
+        LoxClass klass = new LoxClass(stmt.name.lexeme, (LoxClass) superclass, methods);
 
         if (superclass != null) {
             environment = environment.enclosing;
         }
 
         environment.assign(stmt.name, klass);
+        return null;
+    }
+
+    @Override
+    public Void visitExtendStmt(Stmt.Extend stmt) {
+        final LoxClass existingClass;
+        try {
+            existingClass = (LoxClass) environment.get(stmt.name);
+        } catch (RuntimeError e) {
+            // fix up the error message
+            throw new RuntimeError(stmt.name, "Cannot extend the class '" + stmt.name.lexeme + "' as it is not yet defined.");
+        }
+
+        for (Stmt.Function method : stmt.methods) {
+            LoxFunction function = new LoxFunction(method, environment, false);
+            boolean added = existingClass.addExtensionMethod(method.name.lexeme, function);
+            if (!added) {
+                throw new RuntimeError(method.name, "Cannot add extension method '" + method.name.lexeme +
+                        "' when it is already defined for class '" + existingClass.name + "'.");
+            }
+        }
         return null;
     }
 
