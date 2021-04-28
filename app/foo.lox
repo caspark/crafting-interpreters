@@ -186,3 +186,13 @@ class Foo {
   }
 }
 print Foo();
+
+class Onion {
+  cook() {
+    print "Fry until golden brown.";
+  }
+}
+
+class GreatOnion < Onion {}
+
+GreatOnion().cook();

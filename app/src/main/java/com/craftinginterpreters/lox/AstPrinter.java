@@ -156,6 +156,10 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
     public String visitClassStmt(Stmt.Class stmt) {
         StringBuilder sb = new StringBuilder("CLASS:");
         sb.append(stmt.name.lexeme);
+        if (stmt.superclass != null) {
+            sb.append("<");
+            sb.append(stmt.superclass.name.lexeme);
+        }
         sb.append("{\n");
         depth += 1;
         sb.append(stmt.methods.stream().map(func -> INDENT.repeat(depth) + func.accept(this))

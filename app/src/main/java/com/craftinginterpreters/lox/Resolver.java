@@ -50,6 +50,14 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         declare(stmt.name);
         define(stmt.name, true);
 
+        if (stmt.superclass != null && stmt.name.lexeme.equals(stmt.superclass.name.lexeme)) {
+            Lox.error(stmt.superclass.name, "A class can't inherit from itself.");
+        }
+
+        if (stmt.superclass != null) {
+            resolve(stmt.superclass);
+        }
+
         beginScope();
         // we pretend that `this` is already "used" because we don't consider it an error if `this` is not used.
         scopes.peek().put("this", new Tuple<>(stmt.name.line, VariableState.USED));
