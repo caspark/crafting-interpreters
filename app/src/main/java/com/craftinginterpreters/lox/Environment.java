@@ -37,6 +37,13 @@ class Environment {
         throw new RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
     }
 
+    /**
+     * Special case getter to bypass "uninitialized variable" error check.
+     */
+    Object getThis() {
+        return values.get("this");
+    }
+
     Object getAt(int distance, Token name) {
         Object val = ancestor(distance).values.get(name.lexeme);
         if (val == UNINITIALIZED_VALUE) {

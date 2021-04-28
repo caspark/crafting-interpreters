@@ -178,3 +178,11 @@ var cake = Cake();
 cake.flavor = "German chocolate";
 cake.taste(); // Prints "The German chocolate cake is delicious!".
 // print this;
+
+class Foo {
+  init() {
+    //return "something else";
+    return;
+  }
+}
+print Foo();

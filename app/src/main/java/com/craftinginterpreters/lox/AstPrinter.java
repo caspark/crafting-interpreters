@@ -1,7 +1,9 @@
 package com.craftinginterpreters.lox;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
@@ -110,7 +112,7 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
         StringBuilder builder = new StringBuilder();
 
         builder.append("(").append(name);
-        for (Expr expr : exprs) {
+        for (Expr expr : Arrays.stream(exprs).filter(Objects::nonNull).collect(Collectors.toList())) {
             builder.append(" ");
             builder.append(expr.accept(this));
         }
