@@ -2,11 +2,13 @@
 
 Implementation of interpreters from [Crafting Interpreters](http://craftinginterpreters.com).
 
+# Jlox
+
 ## Running
 
 ### Convenience script
 
-Build and start Lox:
+Build and start:
 
 ```shell
 ./jlox.sh # interactive
@@ -39,5 +41,17 @@ Run the AST generation tool:
 
 ```shell
 gradle run generateAst
-# you should see changes to Expr.java 
+# you should see changes to Expr.java
+```
+
+# Clox
+
+## Running
+
+### Convenience script
+
+Build and start clox, assuming you have cmake and make:
+
+```shell
+./clox.sh
 ```
