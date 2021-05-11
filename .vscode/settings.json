@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "memory.h": "c"
+    },
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true
+}
