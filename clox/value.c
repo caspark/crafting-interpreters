@@ -30,6 +30,11 @@ void freeValueArray(ValueArray *array)
     initValueArray(array);
 }
 
+int lenValueArray(ValueArray *array)
+{
+    return array->count;
+}
+
 void printValue(Value value)
 {
     printf("%g", value);
