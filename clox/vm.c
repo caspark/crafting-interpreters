@@ -79,7 +79,11 @@ static InterpretResult run()
             BINARY_OP(/);
             break;
         case OP_NEGATE:
+#ifdef NEGATE_IN_PLACE
+            *vm.stackTop = -(*vm.stackTop);
+#else
             push(-pop());
+#endif
             break;
         case OP_RETURN:
         {

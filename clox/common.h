@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define DEBUG_TRACE_EXECUTION
+// #define DEBUG_TRACE_EXECUTION
+#define NEGATE_IN_PLACE
 
 #endif
