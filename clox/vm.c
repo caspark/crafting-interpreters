@@ -80,7 +80,7 @@ static InterpretResult run()
             break;
         case OP_NEGATE:
 #ifdef NEGATE_IN_PLACE
-            *vm.stackTop = -(*vm.stackTop);
+            *(vm.stackTop - 1) = -*(vm.stackTop - 1);
 #else
             push(-pop());
 #endif
