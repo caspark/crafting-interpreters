@@ -9,7 +9,9 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/clox/build/clox",
-            "args": [],
+            "args": [
+                "bar.lox"
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/clox",
             "environment": [],
