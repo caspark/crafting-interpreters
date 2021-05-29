@@ -1,3 +1,9 @@
+More resources on Pratt parsing:
+
+* Rust - https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html
+* Bob's Java version - http://journal.stuffwithstuff.com/2011/03/19/pratt-parsers-expression-parsing-made-easy/
+* Summary of several blog posts on it - https://www.oilshell.org/blog/2017/03/31.html
+
 1) Trace `(-1 + 2) * 3 - -4` - functions called, order they are called, which calls which, and the arguments passed to them.
 
 ```c
