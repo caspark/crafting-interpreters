@@ -18,15 +18,16 @@ typedef struct {
 
 typedef enum {
   PREC_NONE,
-  PREC_ASSIGNMENT,  // =
-  PREC_OR,          // or
-  PREC_AND,         // and
-  PREC_EQUALITY,    // == !=
-  PREC_COMPARISON,  // < > <= >=
-  PREC_TERM,        // + -
-  PREC_FACTOR,      // * /
-  PREC_UNARY,       // ! -
-  PREC_CALL,        // . ()
+  PREC_ASSIGNMENT,   // =
+  PREC_CONDITIONAL,  // `?` (ternary conditional)
+  PREC_OR,           // or
+  PREC_AND,          // and
+  PREC_EQUALITY,     // == !=
+  PREC_COMPARISON,   // < > <= >=
+  PREC_TERM,         // + -
+  PREC_FACTOR,       // * /
+  PREC_UNARY,        // ! -
+  PREC_CALL,         // . ()
   PREC_PRIMARY
 } Precedence;
 
@@ -152,6 +153,17 @@ static void binary() {
   }
 }
 
+static void conditional() {
+  emitByte(OP_TERNARY);  // this would actually need to emit some jump instructions or similar
+
+  ParseRule* rule = getRule(TOKEN_QUESTION);
+  parsePrecedence((Precedence)(rule->precedence + 1));  // parse 'if' branch
+
+  consume(TOKEN_COLON, "Expect ':' after '?' (e.g. 'A ? B : C').");
+
+  parsePrecedence((Precedence)(rule->precedence + 1));  // parse 'else' branch
+}
+
 static void grouping() {
   expression();
   consume(TOKEN_RIGHT_PAREN, "Expect ')' after expression.");
@@ -180,9 +192,11 @@ ParseRule rules[] = {
   [TOKEN_DOT]           = {NULL,     NULL,   PREC_NONE},
   [TOKEN_MINUS]         = {unary,    binary, PREC_TERM},
   [TOKEN_PLUS]          = {NULL,     binary, PREC_TERM},
+  [TOKEN_COLON]         = {NULL,     NULL,   PREC_NONE},
   [TOKEN_SEMICOLON]     = {NULL,     NULL,   PREC_NONE},
   [TOKEN_SLASH]         = {NULL,     binary, PREC_FACTOR},
   [TOKEN_STAR]          = {NULL,     binary, PREC_FACTOR},
+  [TOKEN_QUESTION]      = {NULL,     conditional, PREC_CONDITIONAL},
   [TOKEN_BANG]          = {NULL,     NULL,   PREC_NONE},
   [TOKEN_BANG_EQUAL]    = {NULL,     NULL,   PREC_NONE},
   [TOKEN_EQUAL]         = {NULL,     NULL,   PREC_NONE},

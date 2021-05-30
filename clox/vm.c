@@ -61,6 +61,10 @@ static InterpretResult run() {
       case OP_MULTIPLY: BINARY_OP(*); break;
       case OP_DIVIDE: BINARY_OP(/); break;
       case OP_NEGATE: push(-pop()); break;
+      case OP_TERNARY:
+        // we don't know how to handle this yet so just print out that we saw it
+        printf("Ternary op encountered!\n");
+        break;
       case OP_RETURN: {
         printValue(pop());
         printf("\n");

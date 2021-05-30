@@ -11,9 +11,11 @@ typedef enum {
   TOKEN_DOT,
   TOKEN_MINUS,
   TOKEN_PLUS,
+  TOKEN_COLON,
   TOKEN_SEMICOLON,
   TOKEN_SLASH,
   TOKEN_STAR,
+  TOKEN_QUESTION,
   // One or two character tokens.
   TOKEN_BANG,
   TOKEN_BANG_EQUAL,
