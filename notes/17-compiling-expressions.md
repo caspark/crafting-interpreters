@@ -63,11 +63,13 @@ expression()
 endCompiler()
 ```
 
-TODO
-
 2) In Lox, what tokens other than MINUS can be used in both prefix and infix positions? What about C or in another language of your choice?
 
-TODO
+I don't think there are any others in Lox?
+
+In Ruby, `+` is the same as minus.
+
+In C, `*` can be multiply or a pointer.
 
 3) Add support for "mixfix" expressions like C's ternary conditional operator `?:` to the parser (no need to implement it on the compiler/bytecode generation side).
 
