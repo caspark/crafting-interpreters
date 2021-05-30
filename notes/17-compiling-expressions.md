@@ -73,4 +73,4 @@ In C, `*` can be multiply or a pointer.
 
 3) Add support for "mixfix" expressions like C's ternary conditional operator `?:` to the parser (no need to implement it on the compiler/bytecode generation side).
 
-TODO
+Had a stab at this over in `chap17-challenge-3`.
