@@ -9,4 +9,16 @@ Done in `chap19-challenge-2` branch.
 
 3. If Lox was your language, what would you have it do when a user tries to use + with one string operand and the other some other type? Justify your choice. What do other languages do?
 
-TODO
+I would:
+
+* implement string interpolation as the preferred way of building strings
+* have any implicit conversion to String fail
+
+This would prevent most unintentional "didn't meant to convert that to a string" errors.
+
+What other languages do:
+
+* Java - happily convert the other operand to a string
+* Javascript - for +, convert the other operand to a string
+* Python - refuse to concat string and other operand, have to convert to string manually
+* Rust - manual conversion also required
