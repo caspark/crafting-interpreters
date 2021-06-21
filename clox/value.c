@@ -51,3 +51,25 @@ bool valuesEqual(Value a, Value b) {
     default: return false;  // Unreachable.
   }
 }
+
+static uint32_t hashBytes(const void* ptr, int size) {
+  uint32_t hash = 2166136261u;
+  for (int i = 0; i < size; i++) {
+    hash ^= ((uint8_t*)ptr)[i];
+    hash *= 16777619;
+  }
+  return hash;
+}
+
+uint32_t hashValue(const Value* value) {
+  switch (value->type) {
+    case VAL_BOOL: return hashBytes(value, sizeof(bool));
+    case VAL_NIL:
+      // we don't want the user to use Nil as a key for any hash tables, so we should error here
+      // but because we don't have errors, we'll just return 0 as hashcode instead.
+      printf("Can't hash a nil value, aborting!\n");
+      return 0;
+    case VAL_NUMBER: return hashBytes(value, sizeof(double));
+    case VAL_OBJ: return hashObject(*value);
+  }
+}

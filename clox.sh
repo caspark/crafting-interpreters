@@ -8,8 +8,8 @@ pushd clox/build
 make
 popd
 
-if [ -x "$(which rlwrap)" ]; then
-  exec rlwrap ./clox/build/clox "$@"
-else
-  exec ./clox/build/clox "$@"
-fi
+# if [ -x "$(which rlwrap)" ]; then
+#   exec rlwrap ./clox/build/clox "$@"
+# else
+  exec valgrind ./clox/build/clox "$@"
+# fi

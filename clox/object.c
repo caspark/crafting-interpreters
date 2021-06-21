@@ -24,7 +24,8 @@ static ObjString* allocateString(char* chars, int length, uint32_t hash) {
   string->length = length;
   string->chars = chars;
   string->hash = hash;
-  tableSet(&vm.strings, string, NIL_VAL);
+  // Hackety: pretend the ObjString* is a Value* since we know we'll use tableFindString to get it out
+  tableSet(&vm.strings, (Value*)string, NIL_VAL, string->hash);
   return string;
 }
 
@@ -68,4 +69,14 @@ void printObject(Value value) {
       printf("%s", AS_CSTRING(value));
       break;
   }
+}
+
+uint32_t hashObject(Value value) {
+  switch (OBJ_TYPE(value)) {
+    case OBJ_STRING: return AS_STRING(value)->hash;
+  }
+  // we should throw an error here, but we can't because lox doesn't have errors
+  // so we'll just printf some instead.
+  printf("Failed to calculate hashcode, unknown object type!\n");
+  return 0;
 }
