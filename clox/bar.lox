@@ -1,7 +1,4 @@
-print !(5 - 4 > 3 * -2 == !nil);
-print "sup?";
-
-var breakfast = "beignets";
-var beverage = "cafe au lait";
-breakfast = "beignets with " + beverage;
+var breakfast = "world";
+breakfast = "hello";
+breakfast = "world";
 print breakfast;
