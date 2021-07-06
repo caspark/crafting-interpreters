@@ -42,6 +42,7 @@ typedef struct {
 typedef struct {
   Token name;
   int depth;
+  bool mutable;
 } Local;
 
 typedef struct {
@@ -195,7 +196,8 @@ static void string(bool canAssign) {
 static void namedVariable(Token name, bool canAssign) {
   uint8_t getOp, setOp;
   int arg = resolveLocal(current, &name);
-  if (arg != -1) {
+  bool isLocal = arg != -1;
+  if (isLocal) {
     getOp = OP_GET_LOCAL;
     setOp = OP_SET_LOCAL;
   } else {
@@ -205,6 +207,10 @@ static void namedVariable(Token name, bool canAssign) {
   }
 
   if (canAssign && match(TOKEN_EQUAL)) {
+    if (isLocal && !current->locals[arg].mutable) {
+      error("Cannot assign to immutable variable (variables created via `let` are not mutable)");
+    }
+
     expression();
     emitBytes(setOp, (uint8_t)arg);
   } else {
@@ -302,6 +308,7 @@ ParseRule rules[] = {
   [TOKEN_SUPER]         = {NULL,     NULL,   PREC_NONE},
   [TOKEN_THIS]          = {NULL,     NULL,   PREC_NONE},
   [TOKEN_TRUE]          = {literal,  NULL,   PREC_NONE},
+  [TOKEN_LET]           = {NULL,     NULL,   PREC_NONE},
   [TOKEN_VAR]           = {NULL,     NULL,   PREC_NONE},
   [TOKEN_WHILE]         = {NULL,     NULL,   PREC_NONE},
   [TOKEN_ERROR]         = {NULL,     NULL,   PREC_NONE},
@@ -356,7 +363,7 @@ static int resolveLocal(Compiler* compiler, Token* name) {
   return -1;
 }
 
-static void addLocal(Token name) {
+static void addLocal(Token name, bool mutable) {
   if (current->localCount == UINT8_COUNT) {
     error("Too many local variables in function.");
     return;
@@ -365,9 +372,10 @@ static void addLocal(Token name) {
   Local* local = &current->locals[current->localCount++];
   local->name = name;
   local->depth = -1;
+  local->mutable = mutable;
 }
 
-static void declareVariable() {
+static void declareVariable(bool mutable) {
   if (current->scopeDepth == 0) {
     return;
   }
@@ -384,7 +392,7 @@ static void declareVariable() {
     }
   }
 
-  addLocal(*name);
+  addLocal(*name, mutable);
 }
 
 static void defineVariable(uint8_t global) {
@@ -396,12 +404,16 @@ static void defineVariable(uint8_t global) {
   emitBytes(OP_DEFINE_GLOBAL, global);
 }
 
-static uint8_t parseVariable(const char* errorMessage) {
+static uint8_t parseVariable(const char* errorMessage, bool mutable) {
   consume(TOKEN_IDENTIFIER, errorMessage);
 
-  declareVariable();
+  declareVariable(mutable);
   if (current->scopeDepth > 0) {
     return 0;
+  }
+
+  if (!mutable) {
+    error("Due to implementor laziness, you can't declare an immutable global variable using let - sorry bud!");
   }
 
   return identifierConstant(&parser.previous);
@@ -427,8 +439,8 @@ static void block() {
   consume(TOKEN_RIGHT_BRACE, "Expect '}' after block.");
 }
 
-static void varDeclaration() {
-  uint8_t global = parseVariable("Expect variable name.");
+static void varDeclaration(bool mutable) {
+  uint8_t global = parseVariable("Expect variable name.", mutable);
 
   if (match(TOKEN_EQUAL)) {
     expression();
@@ -462,6 +474,7 @@ static void synchronize() {
     switch (parser.current.type) {
       case TOKEN_CLASS:
       case TOKEN_FUN:
+      case TOKEN_LET:
       case TOKEN_VAR:
       case TOKEN_FOR:
       case TOKEN_IF:
@@ -479,7 +492,9 @@ static void synchronize() {
 
 static void declaration() {
   if (match(TOKEN_VAR)) {
-    varDeclaration();
+    varDeclaration(true);
+  } else if (match(TOKEN_LET)) {
+    varDeclaration(false);
   } else {
     statement();
   }

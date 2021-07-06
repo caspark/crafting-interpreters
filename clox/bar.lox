@@ -1,9 +1,22 @@
-print !(5 - 4 > 3 * -2 == !nil);
-print "sup?";
-var breakfast = "beignets";
+// print !(5 - 4 > 3 * -2 == !nil);
+// print "sup?";
+// var breakfast = "beignets";
+// {
+// var beverage = "cafe au lait";
+// var breakfast = "beignets with " + beverage;
+// print breakfast;
+// }
+// print breakfast;
+
 {
-var beverage = "cafe au lait";
-var breakfast = "beignets with " + beverage;
-print breakfast;
+    var a = 1;
+    a = a + 2;
+    let b = 3;
+    // b = b + 4;
+    print "done local";
 }
-print breakfast;
+var c = 5;
+c = c + 6;
+// let d = 7;
+// d = d + 8;
+print "done global";
