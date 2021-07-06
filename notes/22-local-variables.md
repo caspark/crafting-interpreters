@@ -21,8 +21,10 @@ Why? Catches errors earlier.
 
 3. Add const (as in JS, not C) local variables to lox, so that assigning to a const variable causes a compile error.
 
-TODO
+Implemented in `chap22-challenge3`, though note I only implemented local immutable variables and punted on implementing the same for global variables.
+
+I chose `let` syntax because it is the same number of characters as `var`, but it's more visually distinct than `val`.
 
 4. Extend clox to allow more than 256 local variables to be in scope at a time.
 
-TODO
+Ran out of time.
