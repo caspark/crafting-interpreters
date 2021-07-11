@@ -48,8 +48,8 @@ typedef struct {
   Local locals[UINT8_COUNT];
   int localCount;
   int scopeDepth;
-  int loopDepth;
-  int loopContinueJumpTarget[256];
+  int loopScopeDepth;
+  int loopContinueJumpTarget;
 } Compiler;
 
 Parser parser;
@@ -181,7 +181,8 @@ static void patchJump(int offset) {
 static void initCompiler(Compiler* compiler) {
   compiler->localCount = 0;
   compiler->scopeDepth = 0;
-  compiler->loopDepth = -1;
+  compiler->loopScopeDepth = -1;
+  compiler->loopContinueJumpTarget = -1;
   current = compiler;
 }
 
@@ -543,7 +544,7 @@ static void forStatement() {
 
   // loopContinueJumpTarget = loopStart;
   statement();
-  emitLoop(current->loopContinueJumpTarget[current->loopDepth]);  // TODO fix me
+  emitLoop(current->loopContinueJumpTarget);  // TODO fix me
   // loopContinueJumpTarget = -1;
 
   if (exitJump != -1) {
@@ -581,10 +582,10 @@ static void printStatement() {
 }
 
 static void whileStatement() {
-  current->loopDepth++;
-  int thisLoopDepth = current->loopDepth;
-  current->loopContinueJumpTarget[thisLoopDepth] = currentChunk()->count;
-  int thisLoopScopeDepth = current->scopeDepth;
+  int originalLoopContinueJumpTarget = current->loopContinueJumpTarget;
+  int originalLoopScopeDepth = current->loopScopeDepth;
+  current->loopContinueJumpTarget = currentChunk()->count;
+  current->loopScopeDepth = current->scopeDepth;
   consume(TOKEN_LEFT_PAREN, "Expect '(' after 'while'.");
   expression();
   consume(TOKEN_RIGHT_PAREN, "Expect ')' after condition.");
@@ -592,20 +593,21 @@ static void whileStatement() {
   int exitJump = emitJump(OP_JUMP_IF_FALSE);
   emitByte(OP_POP);
   statement();
-  emitLoop(current->loopContinueJumpTarget[thisLoopDepth]);
+  emitLoop(current->loopContinueJumpTarget);
 
   patchJump(exitJump);
   emitByte(OP_POP);
 
-  resetScopeToDepth(thisLoopScopeDepth);
-  current->loopDepth--;
+  current->loopContinueJumpTarget = originalLoopContinueJumpTarget;
+  current->loopScopeDepth = originalLoopScopeDepth;
 }
 
 static void continueStatement() {
-  if (current->loopDepth == -1) {
+  if (current->loopContinueJumpTarget == -1) {
     error("Cannot 'continue' outside of a loop.");
   } else {
-    emitLoop(current->loopContinueJumpTarget[current->loopDepth]);
+    resetScopeToDepth(current->loopScopeDepth);
+    emitLoop(current->loopContinueJumpTarget);
     consume(TOKEN_SEMICOLON, "Expect ';' after 'continue'.");
   }
 }
