@@ -570,18 +570,32 @@ static void printStatement() {
 }
 
 static void whileStatement() {
+  emitByte(OP_TRUE);  // whether the else should be executed
   int loopStart = currentChunk()->count;
   consume(TOKEN_LEFT_PAREN, "Expect '(' after 'while'.");
-  expression();
+  expression();  // while condition
   consume(TOKEN_RIGHT_PAREN, "Expect ')' after condition.");
 
   int exitJump = emitJump(OP_JUMP_IF_FALSE);
+  emitByte(OP_POP);  // while condition
+
+  // mark `else` as not needing to be executed
   emitByte(OP_POP);
+  emitByte(OP_FALSE);
+
   statement();
   emitLoop(loopStart);
 
   patchJump(exitJump);
-  emitByte(OP_POP);
+  emitByte(OP_POP);  // while condition
+
+  if (match(TOKEN_ELSE)) {
+    int elseJump = emitJump(OP_JUMP_IF_FALSE);
+    statement();
+
+    patchJump(elseJump);
+    emitByte(OP_POP);  // whether else should be executed or not
+  }
 }
 
 static void synchronize() {

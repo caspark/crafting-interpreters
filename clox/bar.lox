@@ -1,32 +1,9 @@
-print !(5 - 4 > 3 * -2 == !nil);
-print "sup?";
-var breakfast = "beignets";
-{
-var beverage = "cafe au lait";
-var breakfast = "beignets with " + beverage;
-print breakfast;
+var i = 1;
+while (i == 0) {
+    print "loop ran";
+    i = 1;
 }
-print breakfast;
-
-if (1 != 2 or 3 == 3) {
-    print "yep";
-} else {
-    print "nope";
+else {
+    print "running else";
 }
-
-{
-    var i = 0;
-    while (i < 3) {
-        print i;
-        i = i + 1;
-    }
-}
-
-{
-    for (var j = 0; j>-2; j = j -1) {
-        print j;
-    }
-    var j = 10;
-}
-
-print "doneso";
+print "done";
