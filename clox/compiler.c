@@ -48,12 +48,13 @@ typedef struct {
   Local locals[UINT8_COUNT];
   int localCount;
   int scopeDepth;
+  int loopDepth;
+  int loopContinueJumpTarget[256];
 } Compiler;
 
 Parser parser;
 Compiler* current = NULL;
 Chunk* compilingChunk;
-int continueLoopTarget;
 
 static Chunk* currentChunk() {
   return compilingChunk;
@@ -180,6 +181,7 @@ static void patchJump(int offset) {
 static void initCompiler(Compiler* compiler) {
   compiler->localCount = 0;
   compiler->scopeDepth = 0;
+  compiler->loopDepth = -1;
   current = compiler;
 }
 
@@ -203,6 +205,12 @@ static void endScope() {
          current->locals[current->localCount - 1].depth > current->scopeDepth) {
     emitByte(OP_POP);
     current->localCount--;
+  }
+}
+
+static void resetScopeToDepth(int targetDepth) {
+  while (current->scopeDepth > targetDepth) {
+    endScope();
   }
 }
 
@@ -533,10 +541,10 @@ static void forStatement() {
     patchJump(bodyJump);
   }
 
-  continueLoopTarget = loopStart;
+  // loopContinueJumpTarget = loopStart;
   statement();
-  emitLoop(continueLoopTarget);
-  continueLoopTarget = -1;
+  emitLoop(current->loopContinueJumpTarget[current->loopDepth]);  // TODO fix me
+  // loopContinueJumpTarget = -1;
 
   if (exitJump != -1) {
     patchJump(exitJump);
@@ -573,7 +581,10 @@ static void printStatement() {
 }
 
 static void whileStatement() {
-  continueLoopTarget = currentChunk()->count;
+  current->loopDepth++;
+  int thisLoopDepth = current->loopDepth;
+  current->loopContinueJumpTarget[thisLoopDepth] = currentChunk()->count;
+  int thisLoopScopeDepth = current->scopeDepth;
   consume(TOKEN_LEFT_PAREN, "Expect '(' after 'while'.");
   expression();
   consume(TOKEN_RIGHT_PAREN, "Expect ')' after condition.");
@@ -581,18 +592,20 @@ static void whileStatement() {
   int exitJump = emitJump(OP_JUMP_IF_FALSE);
   emitByte(OP_POP);
   statement();
-  emitLoop(continueLoopTarget);
+  emitLoop(current->loopContinueJumpTarget[thisLoopDepth]);
 
   patchJump(exitJump);
   emitByte(OP_POP);
-  continueLoopTarget = -1;
+
+  resetScopeToDepth(thisLoopScopeDepth);
+  current->loopDepth--;
 }
 
 static void continueStatement() {
-  if (continueLoopTarget == -1) {
+  if (current->loopDepth == -1) {
     error("Cannot 'continue' outside of a loop.");
   } else {
-    emitLoop(continueLoopTarget);
+    emitLoop(current->loopContinueJumpTarget[current->loopDepth]);
     consume(TOKEN_SEMICOLON, "Expect ';' after 'continue'.");
   }
 }
@@ -659,7 +672,6 @@ bool compile(const char* source, Chunk* chunk) {
   Compiler compiler;
   initCompiler(&compiler);
   compilingChunk = chunk;
-  continueLoopTarget = -1;
 
   parser.hadError = false;
   parser.panicMode = false;

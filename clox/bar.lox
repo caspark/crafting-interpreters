@@ -1,21 +1,26 @@
 {
     var i = 0;
     while (i < 3) {
-        i = i + 1;
-        if (i == 2) {
-            continue;
+        {
+            var j = "sample";
+            i = i + 1;
+            if (i == 2) {
+                continue;
+            }
+            print i;
+            print j;
         }
-        print i;
     }
+    // print j;
 }
 
-{
-    for (var j = 0; j>=-2; j = j - 1) {
-        if (j == -1) {
-            continue;
-        }
-        print j;
-    }
-}
+// {
+//     for (var j = 0; j>=-2; j = j - 1) {
+//         if (j == -1) {
+//             continue;
+//         }
+//         print j;
+//     }
+// }
 
 print "doneso";
