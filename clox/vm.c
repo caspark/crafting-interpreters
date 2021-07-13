@@ -146,6 +146,12 @@ static InterpretResult run() {
         }
         break;
       }
+      case OP_EQUAL_KEEP_A: {
+        Value b = pop();
+        Value a = peek(0);
+        push(BOOL_VAL(valuesEqual(a, b)));
+        break;
+      }
       case OP_EQUAL: {
         Value b = pop();
         Value a = pop();

@@ -11,6 +11,7 @@ typedef enum {
   TOKEN_DOT,
   TOKEN_MINUS,
   TOKEN_PLUS,
+  TOKEN_COLON,
   TOKEN_SEMICOLON,
   TOKEN_SLASH,
   TOKEN_STAR,
@@ -44,6 +45,9 @@ typedef enum {
   TOKEN_TRUE,
   TOKEN_VAR,
   TOKEN_WHILE,
+  TOKEN_SWITCH,
+  TOKEN_CASE,
+  TOKEN_DEFAULT,
   // Special tokens.
   TOKEN_ERROR,
   TOKEN_EOF

@@ -584,6 +584,72 @@ static void whileStatement() {
   emitByte(OP_POP);
 }
 
+static void switchStatement() {
+  // 256 switch cases ought to be enough for anybody
+#define MAX_SWITCH_CASES 256
+
+  printf("Parsed a switch\n");
+  consume(TOKEN_LEFT_PAREN, "Expect '(' after 'switch'.");
+  expression();
+  consume(TOKEN_RIGHT_PAREN, "Expect ')' after 'switch' statement's expression.");
+  consume(TOKEN_LEFT_BRACE, "Expect '{' to open switch body.");
+
+  int endJumpsCount = 0;
+  int endJumps[MAX_SWITCH_CASES];
+  int nextCaseJump = -1;
+
+  while (match(TOKEN_CASE)) {
+    printf("Parsing a case\n");
+    if (nextCaseJump != -1) {
+      patchJump(nextCaseJump);
+      emitByte(OP_POP);
+    }
+    expression();
+    emitByte(OP_EQUAL_KEEP_A);
+    nextCaseJump = emitJump(OP_JUMP_IF_FALSE);
+    emitByte(OP_POP);
+
+    consume(TOKEN_COLON, "Expect ':' after 'case' expression for 'switch' statement.");
+    statement();
+
+    if (endJumpsCount > MAX_SWITCH_CASES) {
+      error("Too many switch cases.");
+    } else {
+      endJumps[endJumpsCount++] = emitJump(OP_JUMP);
+    }
+  }
+
+  if (match(TOKEN_DEFAULT)) {
+    printf("Parsing a default\n");
+    if (nextCaseJump != -1) {
+      patchJump(nextCaseJump);
+      emitByte(OP_POP);
+    }
+    consume(TOKEN_COLON, "Expect ':' after 'switch' statement's 'default'.");
+    statement();
+
+    if (endJumpsCount > MAX_SWITCH_CASES) {
+      error("Too many switch cases.");
+    } else {
+      endJumps[endJumpsCount++] = emitJump(OP_JUMP);
+    }
+  } else {
+    if (nextCaseJump != -1) {
+      patchJump(nextCaseJump);
+      emitByte(OP_POP);
+    }
+  }
+
+  consume(TOKEN_RIGHT_BRACE, "Expect '}' to close 'switch' statement.");
+  for (int i = 0; i < endJumpsCount; i++) {
+    patchJump(endJumps[i]);
+  }
+
+  emitByte(OP_POP);  // clean up the expression we were switching against
+
+#undef MAX_SWITCH_CASES
+}
+
 static void synchronize() {
   parser.panicMode = false;
 
@@ -630,6 +696,8 @@ static void statement() {
     ifStatement();
   } else if (match(TOKEN_WHILE)) {
     whileStatement();
+  } else if (match(TOKEN_SWITCH)) {
+    switchStatement();
   } else if (match(TOKEN_LEFT_BRACE)) {
     beginScope();
     block();
