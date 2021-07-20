@@ -29,15 +29,14 @@ if (1 != 2 or 3 == 3) {
     var j = 10;
 }
 
-fun isFun(answer, yet) {
-  if (yet <= 0) {
-    print answer;
-  } else {
-    print "not yet";
-    isFun(answer, yet - 1);
-  }
+fun fib(n) {
+  if (n < 2) return n;
+  return fib(n - 2) + fib(n - 1);
 }
 
-print isFun("yes", 3);
+print "fib start";
+var start = clock();
+print fib(30);
+print clock() - start;
 
 print "doneso";
