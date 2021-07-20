@@ -29,4 +29,15 @@ if (1 != 2 or 3 == 3) {
     var j = 10;
 }
 
+fun isFun(answer, yet) {
+  if (yet <= 0) {
+    print answer;
+  } else {
+    print "not yet";
+    isFun(answer, yet - 1);
+  }
+}
+
+print isFun("yes", 3);
+
 print "doneso";
