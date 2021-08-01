@@ -39,4 +39,15 @@ var start = clock();
 print fib(3);
 print clock() - start;
 
+// closure over variable that stays on the stack
+fun outer() {
+  var x = "outside";
+  fun inner() {
+    print x;
+  }
+  inner();
+}
+outer();
+
+
 print "doneso";
