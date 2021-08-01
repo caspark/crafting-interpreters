@@ -36,7 +36,7 @@ fun fib(n) {
 
 print "fib start";
 var start = clock();
-print fib(30);
+print fib(3);
 print clock() - start;
 
 print "doneso";
