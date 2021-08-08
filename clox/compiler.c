@@ -532,8 +532,10 @@ ParseRule rules[] = {
     [TOKEN_NUMBER] = {number, NULL, PREC_NONE},
     [TOKEN_AND] = {NULL, and_, PREC_AND},
     [TOKEN_CLASS] = {NULL, NULL, PREC_NONE},
+    [TOKEN_DEL] = {NULL, NULL, PREC_NONE},
     [TOKEN_ELSE] = {NULL, NULL, PREC_NONE},
     [TOKEN_FALSE] = {literal, NULL, PREC_NONE},
+    [TOKEN_FROM] = {NULL, NULL, PREC_NONE},
     [TOKEN_FOR] = {NULL, NULL, PREC_NONE},
     [TOKEN_FUN] = {NULL, NULL, PREC_NONE},
     [TOKEN_IF] = {NULL, NULL, PREC_NONE},
@@ -719,6 +721,17 @@ static void ifStatement() {
   }
   patchJump(elseJump);
 }
+static void delStatement() {
+  consume(TOKEN_IDENTIFIER, "Expect property name after 'del'.");
+  uint8_t name = identifierConstant(&parser.previous);
+
+  consume(TOKEN_FROM, "Expect 'from' after the property name that follows the `del`.");
+  expression();
+
+  consume(TOKEN_SEMICOLON, "Expect ';' to finish 'del x from y' statement.");
+
+  emitBytes(OP_DEL_PROPERTY, name);
+}
 
 static void printStatement() {
   expression();
@@ -799,6 +812,8 @@ static void declaration() {
 static void statement() {
   if (match(TOKEN_PRINT)) {
     printStatement();
+  } else if (match(TOKEN_DEL)) {
+    delStatement();
   } else if (match(TOKEN_FOR)) {
     forStatement();
   } else if (match(TOKEN_IF)) {

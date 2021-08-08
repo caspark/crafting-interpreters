@@ -301,6 +301,20 @@ static InterpretResult run() {
         push(value);
         break;
       }
+      case OP_DEL_PROPERTY: {
+        if (!IS_INSTANCE(peek(0))) {
+          runtimeError("Only instances have fields that can be deleted using 'del from'.");
+          return INTERPRET_RUNTIME_ERROR;
+        }
+        ObjInstance* instance = AS_INSTANCE(peek(0));
+
+        ObjString* name = READ_STRING();
+        tableDelete(&instance->fields, name);  // ignore return value
+
+        pop();  // instance
+
+        break;
+      }
       case OP_EQUAL: {
         Value b = pop();
         Value a = pop();
