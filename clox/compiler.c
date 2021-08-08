@@ -23,6 +23,7 @@ typedef enum {
   PREC_OR,          // or
   PREC_AND,         // and
   PREC_EQUALITY,    // == !=
+  PREC_IN,          // in
   PREC_COMPARISON,  // < > <= >=
   PREC_TERM,        // + -
   PREC_FACTOR,      // * /
@@ -507,6 +508,11 @@ static void unary(bool canAssign) {
   }
 }
 
+static void in(bool canAssign) {
+  expression();
+  emitByte(OP_CONTAINS);
+}
+
 ParseRule rules[] = {
     [TOKEN_LEFT_PAREN] = {grouping, call, PREC_CALL},
     [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
@@ -537,6 +543,7 @@ ParseRule rules[] = {
     [TOKEN_FOR] = {NULL, NULL, PREC_NONE},
     [TOKEN_FUN] = {NULL, NULL, PREC_NONE},
     [TOKEN_IF] = {NULL, NULL, PREC_NONE},
+    [TOKEN_IN] = {NULL, in, PREC_IN},
     [TOKEN_NIL] = {literal, NULL, PREC_NONE},
     [TOKEN_OR] = {NULL, or_, PREC_OR},
     [TOKEN_PRINT] = {NULL, NULL, PREC_NONE},

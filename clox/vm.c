@@ -401,6 +401,28 @@ static InterpretResult run() {
       case OP_CLASS:
         push(OBJ_VAL(newClass(READ_STRING())));
         break;
+      case OP_CONTAINS: {
+        if (!IS_INSTANCE(peek(0))) {
+          runtimeError("Can only check for field existence on instances.");
+          return INTERPRET_RUNTIME_ERROR;
+        }
+        ObjInstance* instance = AS_INSTANCE(peek(0));
+
+        if (!IS_STRING(peek(1))) {
+          runtimeError("Only strings are valid fields that can exist on instances.");
+          return INTERPRET_RUNTIME_ERROR;
+        }
+        ObjString* name = AS_STRING(peek(1));
+
+        Value value;
+        if (tableGet(&instance->fields, name, &value)) {
+          push(BOOL_VAL(true));
+        } else {
+          push(BOOL_VAL(false));
+        }
+
+        break;
+      }
     }
   }
 

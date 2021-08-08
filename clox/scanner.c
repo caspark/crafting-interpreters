@@ -123,7 +123,12 @@ static TokenType identifierType() {
         }
       }
       break;
-    case 'i': return checkKeyword(1, 1, "f", TOKEN_IF);
+    case 'i':
+      switch (scanner.start[1]) {
+        case 'f': return TOKEN_IF;
+        case 'n': return TOKEN_IN;
+      }
+      break;
     case 'n': return checkKeyword(1, 2, "il", TOKEN_NIL);
     case 'o': return checkKeyword(1, 1, "r", TOKEN_OR);
     case 'p': return checkKeyword(1, 4, "rint", TOKEN_PRINT);
