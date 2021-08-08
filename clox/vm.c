@@ -269,6 +269,30 @@ static InterpretResult run() {
         *frame->closure->upvalues[slot]->location = peek(0);
         break;
       }
+      case OP_INDEX: {
+        if (!IS_STRING(peek(0))) {
+          runtimeError("Can only index into an instance using a string.");
+          return INTERPRET_RUNTIME_ERROR;
+        }
+        ObjString* name = AS_STRING(peek(0));
+
+        if (!IS_INSTANCE(peek(1))) {
+          runtimeError("Only object instances have properties.");
+          return INTERPRET_RUNTIME_ERROR;
+        }
+        ObjInstance* instance = AS_INSTANCE(peek(1));
+
+        Value value;
+        if (tableGet(&instance->fields, name, &value)) {
+          pop();  // Name
+          pop();  // Instance.
+          push(value);
+          break;
+        }
+
+        runtimeError("Undefined property '%s'.", name->chars);
+        return INTERPRET_RUNTIME_ERROR;
+      }
       case OP_GET_PROPERTY: {
         if (!IS_INSTANCE(peek(0))) {
           runtimeError("Only instances have properties.");

@@ -27,7 +27,7 @@ typedef enum {
   PREC_TERM,        // + -
   PREC_FACTOR,      // * /
   PREC_UNARY,       // ! -
-  PREC_CALL,        // . ()
+  PREC_CALL,        // . () []
   PREC_PRIMARY
 } Precedence;
 
@@ -420,6 +420,13 @@ static void call(bool canAssign) {
   emitBytes(OP_CALL, argCount);
 }
 
+static void index_(bool canAssign) {
+  expression();
+  emitByte(OP_INDEX);
+
+  consume(TOKEN_RIGHT_SQUARE_BRACKET, "Expect ']' after '[' and an expression");
+}
+
 static void dot(bool canAssign) {
   consume(TOKEN_IDENTIFIER, "Expect property name after '.'.");
   uint8_t name = identifierConstant(&parser.previous);
@@ -512,6 +519,8 @@ ParseRule rules[] = {
     [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
     [TOKEN_LEFT_BRACE] = {NULL, NULL, PREC_NONE},  // [big]
     [TOKEN_RIGHT_BRACE] = {NULL, NULL, PREC_NONE},
+    [TOKEN_LEFT_SQUARE_BRACKET] = {NULL, index_, PREC_CALL},
+    [TOKEN_RIGHT_SQUARE_BRACKET] = {NULL, NULL, PREC_NONE},
     [TOKEN_COMMA] = {NULL, NULL, PREC_NONE},
     [TOKEN_DOT] = {NULL, dot, PREC_CALL},
     [TOKEN_MINUS] = {unary, binary, PREC_TERM},
