@@ -1,6 +1,6 @@
 1. Implement a faster approach for calling object constructors (`init`) and benchmark it
 
-TODO
+(Didn't have time to do this.)
 
 2. Most calls are actually not polymorphic even if the language says they can be - how do advanced languages optimize that?
 
@@ -13,7 +13,7 @@ On the one hand, it might be the right call, if field access was more common tha
 On the other hand, no, I don't think it is the right call for my taste: I would allow only white listed fields to be set on a given object instance. That would allow the compiler to check at compilation time that no methods overlap with fields, which means that if you see something that looks like a call, you can check in the methods table first (where it is most likely to be) before checking the fields.
 
 Cons:
-* It's less flexible because you can't treat a field as
+* It's less flexible because you can't treat a field as a function
 
 Pros:
 * Faster at runtime due to 1 fewer hashtable lookup most of the time.
